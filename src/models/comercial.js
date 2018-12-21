@@ -1,21 +1,23 @@
-import bcrypt from 'bcryptjs'; 
+import bcrypt from "bcryptjs";
 
-import {checkUserAndScopes} from './utils';
+import { checkUserAndScopes, passwordToHash, generaSETPart, generaWhere } from "./utils";
 
 class Comercial {
   constructor(db) {
     this.db = db;
     this.MAX_QUERY_RECORDS = process.env.MAX_QUERY_RECORDS;
+    this.comercialAttributes = "id,nombre,email";
   }
 
-  async countAll(user, pool = this.db) {
+  async countAll(filter, user, pool = this.db) {
     // COMPROBACION PERMISOS
     checkUserAndScopes(user, ["comercial_r"]);
 
     // ACCIONES EN LA BBDD
     let dbComerciales;
+    const where = generaWhere(filter);
     try {
-      dbComerciales = await pool.query("Select count(*) from comerciales");
+      dbComerciales = await pool.query(`Select count(*) from comerciales ${where.statement}`,[...where.values]);
       return dbComerciales.rows[0].count;
     } catch (e) {
       throw new Error("Error in Comerciales");
@@ -29,11 +31,17 @@ class Comercial {
     const { filter, first = 10, skip = 0 } = data;
 
     // ACCIONES EN LA BBDD
+    const where = generaWhere(filter,3); 
     let dbComerciales;
     try {
       dbComerciales = await pool.query(
-        "Select *  from comerciales limit $1 offset $2",
-        [first, skip]
+        `Select ${
+          this.comercialAttributes
+        }  
+        from comerciales 
+        ${where.statement}
+        limit $1 offset $2`,
+        [first, skip,...where.values]
       );
       return dbComerciales.rows;
     } catch (e) {
@@ -49,7 +57,7 @@ class Comercial {
     let dbComercial;
     try {
       dbComercial = await pool.query(
-        "Select * from comerciales  where id = $1",
+        `Select ${this.comercialAttributes} from comerciales  where id = $1`,
         [id]
       );
 
@@ -62,26 +70,58 @@ class Comercial {
   async create({ password, username, email }, user, pool = this.db) {
     // COMPROBACION PERMISOS
     checkUserAndScopes(user, ["comercial_rw"]);
-    
-    let dbUser; 
-    try{
-      const salt =  bcrypt.genSaltSync(10);
-      const passwordHash = bcrypt.hashSync(password, salt);
+
+    let dbUser;
+    try {
+      const passwordHash = passwordToHash(password);
       dbUser = await pool.query(
         `INSERT INTO comerciales(email,nombre,password) 
          values($1,$2,$3)
-         returning id,nombre,email
+         returning ${tihs.comercialAttributes}
          `,
         [email, username, passwordHash]
       );
-    } catch(e){
-      throw e ; 
+    } catch (e) {
+      throw e;
     }
 
-    return dbUser.rows[0]; 
+    return dbUser.rows[0];
   }
 
-  
+  async update(data, user, db = this.db) {
+    // COMPROBACION PERMISOS
+    checkUserAndScopes(user, ["comercial_rw"]);
+    console.log(data);
+    // COMPROBACION PARAMETROS
+    const { id, password, nombre, email } = data;
+
+    if(!id){
+      throw new Error("No id provided for update");
+    }
+
+    // CREACION DE LOS VALORES PARA LA BBDD A PARTIR DE LOS PARAMETROS
+    const passwordHash = passwordToHash(password);
+
+    const setObj = generaSETPart({email,password:passwordHash,nombre})
+
+    // ACCIONES EN LA BBDD
+    
+    let dbComercial;
+    try {
+      dbComercial = await db.query(
+        `UPDATE comerciales 
+          SET ${setObj.query}
+          WHERE id = $1
+          RETURNING ${this.comercialAttributes}
+      `,
+        [id,...setObj.vars]
+      );
+    } catch (e) {
+      throw e;
+    }
+
+    return dbComercial.rows[0];
+  }
 }
 
 export default Comercial;

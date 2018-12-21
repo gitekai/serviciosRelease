@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 
 import nodeIF from "./interfaces/node";
-import usuarioIF from "./interfaces/usuarios";
+import usuarioIF from "./interfaces/usuario";
 import contactableIF from './interfaces/contactable';
 
 import pageInfoSchema from "./pageInfo";
@@ -12,6 +12,8 @@ import tokenSchema from './token';
 
 
 const stichedSchema = gql`
+  scalar Date
+
   type Query {
     _: Boolean
   }

@@ -9,10 +9,7 @@ class Pais {
 
   async findAll(searchParams,user,db = this.db) {
     // COMPROBACION PERMISOS
-    // // De momento Paises se puede acceder sin restricciones
-        
-    // COMPROBACION PERMISOS
-    checkUserAndScopes(user, [["pais_r","comercial_r"],"comercial_rw"]);
+    checkUserAndScopes(user, ["pais_r"]);
 
     // COMPROBACION PARAMETROS
     const { first = this.MAX_QUERY_RECORDS, skip = 0, filter={} } = searchParams;

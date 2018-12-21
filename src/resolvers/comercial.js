@@ -3,7 +3,10 @@ import { getPageInfo } from "./utils";
 const resolver = {
   Mutation: {
     createComercial: (_,inputData,{user,models}) => 
-     models.Comercial.create(inputData,user)
+     models.Comercial.create(inputData,user),
+
+    updateComercial: (_,{data},{user,models}) => 
+      models.Comercial.update(data,user)
   },
 
   Query: {
@@ -12,10 +15,11 @@ const resolver = {
     comerciales: async (_, searchParams, context) => {
       const { first, skip, filter } = searchParams;
       const comercialesProm = context.models.Comercial.findAll(
-        { first, skip },
+        { first, skip, filter },
         context.user
       );
       const totalCountProm = context.models.Comercial.countAll(
+        filter,
         context.user
       );
       const [comerciales, totalCount] = await Promise.all([

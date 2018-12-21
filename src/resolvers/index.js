@@ -1,11 +1,15 @@
-import usuarioIFResolver from "./interfaces/usuarios";
+import {GraphQLDateTime} from 'graphql-iso-date';
+import usuarioIFResolver from "./interfaces/usuario";
 import paisResolvers from "./pais";
 import comercialResolver from "./comercial";
-import tokenResolver from "./token";
+
+const customScalarResolver = {
+  Date: GraphQLDateTime, 
+};
 
 export default [
+  customScalarResolver,
   usuarioIFResolver,
   paisResolvers,
   comercialResolver,
-  tokenResolver
 ];

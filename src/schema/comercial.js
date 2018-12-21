@@ -11,12 +11,14 @@ type Comercial implements Node & Usuario {
   
 extend type Query {
   comercial(id: ID!): Comercial 
-  comerciales(first: Int, skip: Int): Comerciales
+  comerciales(first: Int, skip: Int, filter: comercialFilterInput): Comerciales
 }
 
 extend type Mutation {
   createComercial(username: String!, email: String!, password: String! ) : Comercial!
+  updateComercial(data: comercialInput! ): Comercial!
 }
+
 
 type Comerciales {
   nodes: [Comercial]
@@ -24,8 +26,15 @@ type Comerciales {
   pageInfo: PageInfo
 }
 
-input inputComerciales {
-  nombre_regex: String
+input comercialInput {
+  id: ID!
+  nombre: String
+  email: String
+  password: String
+}
+
+input comercialFilterInput{
+  nombre_regex: String 
 }
 
 `;

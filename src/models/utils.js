@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-
+import bcrypt from 'bcryptjs'
 
 
 const generaWhere = (paramOperationObj={},countStart=1, attrToDBField = {}) => {
@@ -14,6 +14,7 @@ const generaWhere = (paramOperationObj={},countStart=1, attrToDBField = {}) => {
     } else {
       attr = attr_tmp;
     }
+    console.log(`attr = ${attr}`)
 
     const value = paramOperationObj[currVal];
 
@@ -90,6 +91,33 @@ const checkUserAndScopes = (user, permisosNeeded ) => {
     throw new Error("Permissions needed " + permisosNeeded.join(','));
   }
 }
+const generaSETPart = (columnToValue,countStart=1) => {
+  let count = countStart; 
+  const columnsWithValues = Object.entries(columnToValue)
+  .filter( ([key,val]) => val != null );
+
+  const queryString = columnsWithValues
+  .map(([key,val])=> {
+    if(val){
+      return `${key} = $${++count}`
+    }
+    return null
+  }).join(",");
+
+  const vars = columnsWithValues.map(([_,val]) => val ); 
+
+  return { query: queryString, vars };
+}
+
+const passwordToHash = (password) => {
+  if(!password){
+    return null
+  }
+
+  const salt =  bcrypt.genSaltSync(10);
+  return   bcrypt.hashSync(password, salt);
+}
 
 
-export {generaWhere, createToken, checkUserAndScopes};
+
+export {generaWhere,generaSETPart,createToken, checkUserAndScopes, passwordToHash};
