@@ -6,9 +6,6 @@ export default `
     correo: String! 
     nombre: String! 
   }
-  extend type Mutation {
-    changePassword(password: String!): Usuario!
-  }
   extend type Query {
     signInUser(email: String!, password: String) : Token! 
   }

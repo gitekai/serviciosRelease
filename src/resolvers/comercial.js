@@ -5,8 +5,8 @@ const resolver = {
     createComercial: (_,inputData,{user,models}) => 
      models.Comercial.create(inputData,user),
 
-    updateComercial: (_,{data},{user,models}) => 
-      models.Comercial.update(data,user)
+    updateComercial: (_,updateParams,{user,models}) => 
+      models.Comercial.update(updateParams,user)
   },
 
   Query: {

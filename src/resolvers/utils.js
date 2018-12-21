@@ -7,6 +7,4 @@ const getPageInfo = (totalCount, first = 0, skip = 0) => {
   };
 };
 
-
-
 export {getPageInfo};

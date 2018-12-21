@@ -1,6 +1,3 @@
-import { gql } from 'apollo-server-express';
-
-
 export default  `
   
 type Comercial implements Node & Usuario {
@@ -13,29 +10,34 @@ extend type Query {
   comercial(id: ID!): Comercial 
   comerciales(first: Int, skip: Int, filter: comercialFilterInput): Comerciales
 }
-
-extend type Mutation {
-  createComercial(username: String!, email: String!, password: String! ) : Comercial!
-  updateComercial(data: comercialInput! ): Comercial!
+input comercialFilterInput{
+  nombre_regex: String 
 }
 
-
+extend type Mutation {
+  createComercial(data: createComercialInput! ) : Comercial!
+  updateComercial(data: updateComercialInput!, id: ID! ) : Comercial!
+  deleteComercial(id:ID!): Boolean! 
+}
 type Comerciales {
   nodes: [Comercial]
   totalCount: Int 
   pageInfo: PageInfo
 }
 
-input comercialInput {
-  id: ID!
+input createComercialInput {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input updateComercialInput {
   nombre: String
   email: String
   password: String
 }
 
-input comercialFilterInput{
-  nombre_regex: String 
-}
+
 
 `;
 

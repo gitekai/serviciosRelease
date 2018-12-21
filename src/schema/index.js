@@ -4,10 +4,11 @@ import nodeIF from "./interfaces/node";
 import usuarioIF from "./interfaces/usuario";
 import contactableIF from './interfaces/contactable';
 
-import pageInfoSchema from "./pageInfo";
-import paisSchema from "./pais";
-import comercialSchema from "./comercial";
-import tokenSchema from './token';
+import pageInfo from "./pageInfo";
+import pais from "./pais";
+import comercial from "./comercial";
+import token from './token';
+import grupoEmpresarial from './grupoEmpresarial'
 
 
 
@@ -31,8 +32,10 @@ export default [
   stichedSchema,
   nodeIF,
   usuarioIF,
-  paisSchema,
-  pageInfoSchema,
-  comercialSchema,
-  tokenSchema,
+  contactableIF,
+  pais,
+  pageInfo,
+  comercial,
+  token,
+  grupoEmpresarial,
 ];

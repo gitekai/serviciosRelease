@@ -1,23 +1,32 @@
 export default `
 
 interface Contactable {
-  emails: [ContactoEmail]  
-  telefonos: [ContactoTelefono]
-  direcciones: [ContactoDireccion]
+  emails: [Email!]
+  direcciones: [Direccion!]
+  telefonos: [Telefono!]
 }
 
-type ContactoEmail {
+type Email implements Node {
   id: ID!
   email: String! 
-  esFacturable: Boolean!
+  "esFacturable: Boolean!"
+  createdAt: Date! 
+  deletedAt: Date 
+}
+input createEmailInput {
+  "esFacturable: Boolean"
+  email: String!
 }
 
-enum TipoTelefono {
-  MOVIL
-  FAX
-  FIJO
-}
 
+
+type Telefono implements Node {
+  id: ID!
+  prefijo: Prefijo!
+  numero: String!
+  tipo: TipoTelefono!
+  descripcion: String
+}  
 type Prefijo {
   id: ID!
   "International Dialing Prefix (00)"
@@ -25,19 +34,25 @@ type Prefijo {
   countryCallingCode: String!
   pais: Pais
 }
-
-
-type ContactoTelefono {
-  id: ID!
-  prefijo: Prefijo!
-  numero: String!
+enum TipoTelefono {
+  MOVIL
+  FAX
+  FIJO
+}
+input createTelefonoInput {
+  prefijoID: ID!
+  numero: String! 
   tipo: TipoTelefono!
   descripcion: String
 }
 
-type ContactoDireccion {
+
+
+type Direccion {
   id: ID!
   esFacturable: Boolean!
+  createdAt: Date! 
+  deletedAt: Date 
   direccion: String! 
   ciudad: String!
   codigoPostal: String!
@@ -46,6 +61,14 @@ type ContactoDireccion {
   provincia: String
   pais: Pais!
 }
-
+input createDireccionInput {
+  idPais: ID!
+  direccion: String!
+  ciudad: String!
+  codigoPostal: String!
+  direccionDetalles: String
+  provincia: String
+  descripcion: String
+}
 
 `;

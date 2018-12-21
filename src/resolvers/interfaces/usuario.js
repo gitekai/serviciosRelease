@@ -20,11 +20,6 @@ const resolver = {
       });
     }
   },
-  Mutation: {
-    changePassword: (_, { password }, context) => {
-      context.models.Usuario.changePassword(password, context.user);
-    }
-  }
 }
 
 export default resolver;

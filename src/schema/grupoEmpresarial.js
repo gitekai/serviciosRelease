@@ -1,18 +1,81 @@
 export default `
 type GrupoEmpresarial implements Node & Contactable {
   id: ID!
-  idErp: ID!
+  idErp: ID
   nombre: String!
+  "esto realmente puede y debe ser una zona"
   pais: Pais!
-  emails: [ ContactoEmail! ]
-  direcciones: [ ContactoDireccion! ]
-  telefonos: [ContactoTelefono! ]
-  comercial: Comercial !
+  emails: [ Email!]
+  direcciones: [ Direccion!]
+  telefonos: [Telefono!]
+}
+
+extend type Query {
+  grupoEmpresarial(id:ID!): GrupoEmpresarial
+  gruposEmpresariales(filter: grupoEmpresarialFilterInput, first: Int, skip: Int): GruposEmpresariales
+}
+type GruposEmpresariales {
+  nodes: [GrupoEmpresarial]
+  pageInfo: PageInfo
+  totalCount: Int
+ }
+ input grupoEmpresarialFilterInput{
+   nombre_regex: String
+ }
+
+
+extend type Mutation {
+  createGrupoEmpresarial(data: createGrupoEmpresarialInput ): GrupoEmpresarial!
+  updateGrupoEmpresarial(data: updateGrupoEmpresarialInput, id: ID!): GrupoEmpresarial!
+  deleteGrupoEmpresarial(id: ID!): Boolean
+}
+input createGrupoEmpresarialInput {
+  nombre: String !
+  idPais: ID!
+  idErp: ID
+  emails: [createEmailInput]
+  direcciones: [createDireccionInput]
+  telefonos: [createTelefonoInput]
+  idComercial: ID! 
+}
+input updateGrupoEmpresarialInput {
+  idGE: ID!
+  nombre: String 
+  idPais: ID
+  idComercial: ID
+  emails: [String]
+  direcciones: [createDireccionInput]
+  telefonos: [createTelefonoInput]
+  }
+
+  extend type GrupoEmpresarial {
+    comercial: Comercial !
+  }
+
+`
+
+/*
+
+
+
+
+
+
+
+
+
+extend type GrupoEmpresarial {
   personaContactoConnection(
     first: Int, 
     skip: Int, 
     ) : GEPersonaContactoConnection!
 }
+
+type GEPersonaContactoConnection {
+  pageInfo: PageInfo!
+  totalCount: Int !
+  edges: [GEPersonaContactoEdge]
+ }
 
 type GEPersonaContactoEdge {
  node: PersonaContacto
@@ -23,47 +86,15 @@ type GEPersonaContactoEdge {
  telefonos: [ContactoTelefono ]
 }
 
-type GEPersonaContactoConnection {
- pageInfo: PageInfo!
- totalCount: Int !
- edges: [GEPersonaContactoEdge]
-}
 
-extend type RootQuery {
-   gruposEmpresariales(first: Int, skip: Int, showDesactivado: Boolean): GruposEmpresariales
-   grupoEmpresarial(id:ID!): GrupoEmpresarial
-}
 
-type GruposEmpresariales {
- nodes: [GrupoEmpresarial]
- pageInfo: PageInfo
- totalCount: Int
-}
 
-extend type RootMutation {
-   createGrupoEmpresarial(data: inputDarAltaGrupoEmpresarial ): GrupoEmpresarial
-   updateGrupoEmpresarial(data: cambiaGrupoEmpresarial): GrupoEmpresarial
-   deleteGrupoEmpresarial(idGE: String!): ID
-}
-input inputDarAltaGrupoEmpresarial {
-  nombre: String !
-  idPais: ID!
-  idComercial: ID!
-  idErp: ID
-  emails: [ inputCreateEmail ]
-  direcciones: [ inputCreateDireccion ]
-  personasContacto: [inputPersonaContactoGEConnection!]
-}
 
-input cambiaGrupoEmpresarial {
-idGE: ID!
-nombre: String 
-idPais: ID
-idComercial: ID
-emails: [String]
-direcciones: [inputCreateDireccion]
-telefonos: [inputCreateTelefonoContacto]
-}
+
+
+
+
+
 
 input inputPersonaContactoGEConnection{
 personaContacto: inputCreatePersonaContacto!
@@ -81,10 +112,9 @@ COMERCIAL
 TECNICO
 }
 
-input inputCambiaNombreGrupoEmpresarial {
-id: ID!
-nombre: String !
-}
+
 
 
 `; 
+
+*/

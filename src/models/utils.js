@@ -1,11 +1,13 @@
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
-
-const generaWhere = (paramOperationObj={},countStart=1, attrToDBField = {}) => {
-
+const generaWhere = (
+  paramOperationObj = {},
+  countStart = 1,
+  attrToDBField = {}
+) => {
   let count = countStart;
-  const result = {statements: [], values: []};
+  const result = { statements: [], values: [] };
   Object.keys(paramOperationObj).forEach(currVal => {
     const [attr_tmp, operator] = currVal.split("_");
     let attr;
@@ -14,7 +16,7 @@ const generaWhere = (paramOperationObj={},countStart=1, attrToDBField = {}) => {
     } else {
       attr = attr_tmp;
     }
-    console.log(`attr = ${attr}`)
+    console.log(`attr = ${attr}`);
 
     const value = paramOperationObj[currVal];
 
@@ -27,97 +29,107 @@ const generaWhere = (paramOperationObj={},countStart=1, attrToDBField = {}) => {
         operatorDB = "!=";
     }
 
-    if(value && operatorDB && attr ){
-      result.values.push(value)
-      result.statements.push(`${attr} ${operatorDB} $${count++}`)
+    if (value && operatorDB && attr) {
+      result.values.push(value);
+      result.statements.push(`${attr} ${operatorDB} $${count++}`);
     }
   });
 
-  const statement = (result.statements.length > 0) ? 'WHERE '+result.statements.join(' AND ') : '';
+  const statement =
+    result.statements.length > 0
+      ? "WHERE " + result.statements.join(" AND ")
+      : "";
   return {
     statement,
-    values: result.values,
+    values: result.values
+  };
+};
+
+const createToken = async (user, permisos, secret) => {
+  const { id, email, nombre } = user;
+  let token;
+  try {
+    token = await jwt.sign({ id, email, nombre, permisos }, secret, {
+      expiresIn: "60m"
+    });
+  } catch (e) {
+    throw e;
   }
-}
 
-const createToken = async ( user, permisos, secret ) => {
-  const { id, email, nombre } = user; 
-  let token; 
-  try{
-    token = await jwt.sign({id,email,nombre,permisos}, secret, { expiresIn: '60m' });
-  } catch(e){
-    throw e; 
-  }
+  return { token };
+};
 
-  return {token}; 
-}
-
-const checkUserAndScopes = (user, permisosNeeded ) => {
-  if(!user){
+const checkUserAndScopes = (user, permisosNeeded) => {
+  if (!user) {
     throw new Error("Not Authenticated");
   }
 
-  const permisosObtained = user.permisos; 
-  console.log("permissions obtained = ")
-  console.log(permisosObtained)
-  if(permisosObtained.includes('ALL')){
-    return 
+  const permisosObtained = user.permisos;
+  console.log("permissions obtained = ");
+  console.log(permisosObtained);
+  if (permisosObtained.includes("ALL")) {
+    return;
   }
 
-  const hasPermission = permisosNeeded.reduce( (bool, permiso) => {
-    if(typeof permiso === 'string'){
- 
-      if(permisosObtained.includes(permiso)){
-        // OK todo en orden 
-        bool=true;
+  const hasPermission = permisosNeeded.reduce((bool, permiso) => {
+    if (typeof permiso === "string") {
+      if (permisosObtained.includes(permiso)) {
+        // OK todo en orden
+        bool = true;
       }
-    } 
-    if(Array.isArray(permiso)){
+    }
+    if (Array.isArray(permiso)) {
       const resumen = permiso.map(p => {
-        if(permisosObtained.includes(p)){
-          return true
+        if (permisosObtained.includes(p)) {
+          return true;
         }
-        return false
-      })
-      if(resumen.every(res => res === true )){
-        bool = true; 
+        return false;
+      });
+      if (resumen.every(res => res === true)) {
+        bool = true;
       }
     }
 
-    return bool ; 
-  },false); 
+    return bool;
+  }, false);
 
-  if(! hasPermission){
-    throw new Error("Permissions needed " + permisosNeeded.join(','));
+  if (!hasPermission) {
+    throw new Error("Permissions needed " + permisosNeeded.join(","));
   }
-}
-const generaSETPart = (columnToValue,countStart=1) => {
-  let count = countStart; 
-  const columnsWithValues = Object.entries(columnToValue)
-  .filter( ([key,val]) => val != null );
+};
+const generaSETPart = (columnToValue, countStart = 1) => {
+  let count = countStart;
+  const columnsWithValues = Object.entries(columnToValue).filter(
+    ([key, val]) => val != null
+  );
 
   const queryString = columnsWithValues
-  .map(([key,val])=> {
-    if(val){
-      return `${key} = $${++count}`
-    }
-    return null
-  }).join(",");
+    .map(([key, val]) => {
+      if (val) {
+        return `${key} = $${++count}`;
+      }
+      return null;
+    })
+    .join(",");
 
-  const vars = columnsWithValues.map(([_,val]) => val ); 
+  const vars = columnsWithValues.map(([_, val]) => val);
 
   return { query: queryString, vars };
-}
+};
 
-const passwordToHash = (password) => {
-  if(!password){
-    return null
+const passwordToHash = password => {
+  if (!password) {
+    return null;
   }
 
-  const salt =  bcrypt.genSaltSync(10);
-  return   bcrypt.hashSync(password, salt);
-}
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+};
 
-
-
-export {generaWhere,generaSETPart,createToken, checkUserAndScopes, passwordToHash};
+export {
+  generaWhere,
+  generaSETPart,
+  createToken,
+  checkUserAndScopes,
+  passwordToHash,
+};

@@ -1,5 +1,3 @@
-import bcrypt from "bcryptjs";
-
 import { checkUserAndScopes, passwordToHash, generaSETPart, generaWhere } from "./utils";
 
 class Comercial {
@@ -88,12 +86,11 @@ class Comercial {
     return dbUser.rows[0];
   }
 
-  async update(data, user, db = this.db) {
+  async update({data,id}, user, db = this.db) {
     // COMPROBACION PERMISOS
     checkUserAndScopes(user, ["comercial_rw"]);
-    console.log(data);
     // COMPROBACION PARAMETROS
-    const { id, password, nombre, email } = data;
+    const { password, nombre, email } = data;
 
     if(!id){
       throw new Error("No id provided for update");
@@ -101,7 +98,6 @@ class Comercial {
 
     // CREACION DE LOS VALORES PARA LA BBDD A PARTIR DE LOS PARAMETROS
     const passwordHash = passwordToHash(password);
-
     const setObj = generaSETPart({email,password:passwordHash,nombre})
 
     // ACCIONES EN LA BBDD
