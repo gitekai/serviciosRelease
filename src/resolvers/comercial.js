@@ -2,8 +2,8 @@ import { getPageInfo } from "./utils";
 
 const resolver = {
   Mutation: {
-    createComercial: (_,inputData,{user,models}) => 
-     models.Comercial.create(inputData,user),
+    createComercial: (_,{data},{user,models}) => 
+     models.Comercial.create(data,user),
 
     updateComercial: (_,updateParams,{user,models}) => 
       models.Comercial.update(updateParams,user)

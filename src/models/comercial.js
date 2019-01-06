@@ -67,7 +67,7 @@ class Comercial {
 
   async create({ password, username, email }, user, pool = this.db) {
     // COMPROBACION PERMISOS
-    checkUserAndScopes(user, ["comercial_rw"]);
+   // checkUserAndScopes(user, ["comercial_rw"]);
 
     let dbUser;
     try {
@@ -75,7 +75,7 @@ class Comercial {
       dbUser = await pool.query(
         `INSERT INTO comerciales(email,nombre,password) 
          values($1,$2,$3)
-         returning ${tihs.comercialAttributes}
+         returning ${this.comercialAttributes}
          `,
         [email, username, passwordHash]
       );

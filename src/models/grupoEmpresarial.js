@@ -1,4 +1,3 @@
-import grupoEmpresarial from "../schema/grupoEmpresarial";
 import { generaWhere, checkUserAndScopes } from "./utils";
 import {pipe, normalizeWhiteSpace, upperCaseFirstLetters, upperCaseHiphenFollowed} from '../utils';
 import { format } from "url";
@@ -72,6 +71,33 @@ class GruposEmpresarial {
     }
 
     return gruposEmpresariales.rows[0].count;
+  }
+
+  async findById(id, user, db = this.db) {
+    // COMPROBACION PERMISOS
+    checkUserAndScopes(user, ["ge_r"]);
+    // COMPROBACION PARAMETROS
+    if(!id){
+      throw new Error("Cannot query a GE by id without id");
+    }
+
+    // CREACION DE LOS VALORES PARA LA BBDD A PARTIR DE LOS PARAMETROS
+
+    // ACCIONES EN LA BBDDnormalize
+    let gruposEmpresarialesDB;
+    try {
+      gruposEmpresarialesDB = await db.query(
+        `Select 
+        ${this.GEAttributes}
+        FROM grupos_empresariales
+        where id = $1
+        `,
+        [id]
+      );
+    } catch (e) {
+      throw e;
+    }
+    return gruposEmpresarialesDB.rows[0];
   }
 
   async create(data, user, db = this.db) {
