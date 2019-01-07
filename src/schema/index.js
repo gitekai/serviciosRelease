@@ -4,7 +4,7 @@ import nodeIF from "./interfaces/node";
 import usuarioIF from "./interfaces/usuario";
 import contactableIF from "./interfaces/contactable";
 import productoIF from "./interfaces/producto";
-
+import accionIF from "./interfaces/accionOportunidad";
 import pageInfo from "./pageInfo";
 import pais from "./pais";
 import comercial from "./comercial";
@@ -35,11 +35,12 @@ export default [
   usuarioIF,
   contactableIF,
   productoIF,
+  accionIF,
   productoERPv1,
   pais,
   pageInfo,
   comercial,
   token,
   grupoEmpresarial,
-  oportunidad,
+  oportunidad
 ];

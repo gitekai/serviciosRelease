@@ -7,6 +7,14 @@ type ProductoERPv1 implements Producto & Node {
     isXtraders: Boolean!
 }
 
+type ProductoERPv1ConPrecio implements Node & ProductoConPrecio {
+  id: ID!
+  nombre: String!
+  precio: Float!
+  devisa: DevisaProductoEnum!
+  isXtraders: Boolean!
+}
+
 extend type Query {
     productosERPv1(filter: productoERPv1FilterInput, first: Int, skip: Int): ProductosERPv1! 
 }

@@ -15,7 +15,7 @@ type Oportunidad {
     seguidores: [Usuario]
 
     devisaLineasProducto: DevisaProductoEnum
-    porcentajeDescuentoTotal: Float
+    porcentajeDescuentoTotal: Float!
 
 }
 
@@ -68,21 +68,48 @@ extend type Oportunidad {
 }
 
 type LineaProductoOportunidadItem {
-    producto: Producto!
+    producto: ProductoConPrecio!
     porcentajeDescuento: Float!
     ajustePrecioEnDevisa: Float!
     comentario: String
 }
 
-`
-/*
-    acciones: AccionesOportunidad
-type AccionesOportunidad {
-    nodes: [Accion]
-    totalCount: Int
-    pageInfo: pageInfo
+type MandarEmailOportunidad implements AccionOportunidad & Node{
+  id: ID!
+  date: Date
+  createdBy: Usuario
+  subject: String
+  cc: String
+  bcc: String
+  body: String
+  comentario: String
 }
-*/
+
+
+type ComentarioOportunidad implements AccionOportunidad & Node{
+  id: ID!
+  date: Date
+  createdBy: Usuario
+  comentario: String
+}
+
+extend type Oportunidad {
+  accionesOportunidad(first: Int,skip: Int,filter: accionesOportunidadInput): AccionesOportunidad
+}
+
+input accionesOportunidadInput {
+  id_equals: ID!
+}
+
+type AccionesOportunidad {
+  nodes: [AccionOportunidad]
+  totalCount: Int
+  pageInfo: PageInfo
+}
+
+`
+
+
 
 
 ;

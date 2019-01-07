@@ -5,9 +5,37 @@ const resolver = {
     grupoEmpresarial: ({ idGrupoEmpresarial }, _, { models, user }) =>
       models.GrupoEmpresarial.findById(idGrupoEmpresarial, user),
 
-    lineasProducto: ({id},_,{models,user}) => {
-        return models.Oportunidad.findLineasProductoById(id,user)
+    lineasProducto: ({ id }, _, { models, user }) => {
+      return models.Oportunidad.findLineasProductoById(id, user);
+    }, 
+    accionesOportunidad: async ({id},searchParams,{models, user}) => {
+      const comentarioProm = models.Oportunidad.findAllComentarios(
+        id,
+        searchParams,
+        user
+      );
+      const emailsMandadosProm = models.Oportunidad.findAllEmailsMandados(
+        id,
+        searchParams,
+        user
+      );
+      const [comentarios, emailsMandados] = await Promise.all([
+        comentarioProm,
+        emailsMandadosProm
+      ]);
+
+      return {
+        nodes: [...comentarios, ...emailsMandados].sort( (a,b) => new Date(b.date) - new Date(a.date) ),
+        totalCount: [...comentarios,...emailsMandados].length,
+        pageInfo: {hasNextPage: true }
+      }
+
     }
+  },
+
+  LineaProductoOportunidadItem: {
+    producto: ({ idProductoConPrecio }, _, { models, user }) =>
+      models.Producto.findProductoWithPrecioById(idProductoConPrecio, user)
   },
   Query: {
     oportunidades: async (_, searchParams, { models, user }) => {

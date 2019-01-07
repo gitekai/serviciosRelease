@@ -15,6 +15,17 @@ enum DevisaProductoEnum {
     USD
 }
 
+interface ProductoConPrecio {
+  nombre: String! 
+  precio: Float!
+  devisa: DevisaProductoEnum!
+}
+
+extend type Query {
+  productoConPrecio(idProductoConPrecio: ID!): ProductoConPrecio!
+}
+
+
 
 
 `

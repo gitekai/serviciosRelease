@@ -19,6 +19,20 @@ class Oportunidad {
         linea_producto_porcentaje_descuento "porcentajeDescuentoTotal"
 
       `;
+      this.productosAttributes = `
+      id_producto_con_precio "idProductoConPrecio", 
+      porcentaje_descuento "porcentajeDescuento", 
+      cuota "ajustePrecioEnDevisa", 
+      comentario
+      `
+
+      this.comentariosAttributes = `
+      id, id_usuario, date, comentario
+      `;
+
+      this.mandarEmailAttributes = `
+      id, date, subject, comentario, id_to_recepient, cc, bcc, body
+      `
   }
 
   async findAll(searchParams, user, db = this.db) {
@@ -80,7 +94,7 @@ class Oportunidad {
      let lineasProducto;
      try {
        lineasProducto = await db.query(
-         `Select id_producto_con_precio, porcentaje_descuento "porcentajeDescuento", cuota "ajustePrecioEnDevisa", comentario
+         `Select ${this.productosAttributes}
            FROM oportunidad_productos 
            where id_oportunidad = $1
            `,
@@ -89,10 +103,50 @@ class Oportunidad {
      } catch (e) {
        throw e;
      }
-     console.log(lineasProducto.rows)
      return lineasProducto.rows;
-
   }
+
+  async findAllComentarios(idOportunidad,searchParams, user, db = this.db ){
+     // COMPROBACION PERMISOS
+     checkUserAndScopes(user, ["oportunidad_r"]);
+          // ACCIONES EN LA BBDDn
+          let comentarios;
+          try {
+            comentarios = await db.query(
+              `Select ${this.comentariosAttributes}
+                FROM comentario_oportunidad 
+                where id_oportunidad = $1
+                `,
+              [idOportunidad]
+            );
+          } catch (e) {
+            throw e;
+          }
+          return comentarios.rows;
+  }
+
+  async findAllEmailsMandados(idOportunidad,searchParams, user, db = this.db  ){
+    // COMPROBACION PERMISOS
+    checkUserAndScopes(user, ["oportunidad_r"]);
+         // ACCIONES EN LA BBDDn
+         let emailsMandados;
+         try {
+           emailsMandados = await db.query(
+             `Select ${this.mandarEmailAttributes}
+               FROM mandar_email_oportunidad 
+               where id_oportunidad = $1
+               `,
+             [idOportunidad]
+           );
+         } catch (e) {
+           throw e;
+         }
+         return emailsMandados.rows;
+ }
+
+
+
+
 }
 
 const oportunidadReducer = oportunidad => {
