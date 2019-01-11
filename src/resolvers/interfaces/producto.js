@@ -18,8 +18,13 @@ const resolvers = {
 
   }, 
   Query: {
-    productoConPrecio: (_,serachParams,{models,user}) => 
-      models.Producto.findProductoWithPrecioById(serachParams,user),
+    productoConPrecio: async (_,{idProductoConPrecio},{models,user}) => {
+      const productoPromERPv1 =  models.Producto.findProductoERPv1WithPrecioById(idProductoConPrecio,user); 
+
+      const [productoConPrecioERPv1] = await Promise.all([productoPromERPv1]);
+
+      return {...productoConPrecioERPv1}; 
+    }
     
   }
 };

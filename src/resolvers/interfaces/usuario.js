@@ -1,13 +1,6 @@
 const resolver = {
-/*  Query: {
-    Usuarios: () => {
-
-    } 
-  },
-  */
   Usuario: {
-    __resolveType(obj, context, info ){
-      console.log(obj);
+    __resolveType(obj){
       return 'Comercial'; 
     }
   }, 

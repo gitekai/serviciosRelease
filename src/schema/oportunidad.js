@@ -68,6 +68,7 @@ extend type Oportunidad {
 }
 
 type LineaProductoOportunidadItem {
+    id: ID!
     producto: ProductoConPrecio!
     porcentajeDescuento: Float!
     ajustePrecioEnDevisa: Float!
@@ -76,7 +77,7 @@ type LineaProductoOportunidadItem {
 
 type MandarEmailOportunidad implements AccionOportunidad & Node{
   id: ID!
-  date: Date
+  createdAt: Date
   createdBy: Usuario
   subject: String
   cc: String
@@ -88,23 +89,109 @@ type MandarEmailOportunidad implements AccionOportunidad & Node{
 
 type ComentarioOportunidad implements AccionOportunidad & Node{
   id: ID!
-  date: Date
+  createdAt: Date
   createdBy: Usuario
   comentario: String
 }
 
 extend type Oportunidad {
-  accionesOportunidad(first: Int,skip: Int,filter: accionesOportunidadInput): AccionesOportunidad
-}
-
-input accionesOportunidadInput {
-  id_equals: ID!
+  accionesOportunidad(first: Int,after: String): AccionesOportunidad
 }
 
 type AccionesOportunidad {
   nodes: [AccionOportunidad]
   totalCount: Int
   pageInfo: PageInfo
+}
+
+
+extend type Mutation {
+  createOportunidad(data: createOportunidadInput) : Oportunidad!  
+  updateOportunidad(input: updateOportunidadInput) : Oportunidad! 
+}
+
+input grupoEmpresarialInOportunidadInput {
+  idGrupoEmpresarial: ID
+  grupoEmpresarial: createGrupoEmpresarialInput
+}
+
+input createOportunidadInput {
+  
+  fechaProximaAccion: Date!
+  grupoEmpresarial: grupoEmpresarialInOportunidadInput!
+  modoContacto: modoContactoEnum!
+  idRazonSocial: ID
+  
+  faseNegociacion: faseOportunidadEnum
+  estado: estadoOportunidadEnum
+  prioridad: prioridadOportunidadEnum
+  
+  fechaPrevistaCierre: Date
+  probalidadGanado: Float
+  
+  porcentajeDescuentoTotal: Float
+  devisaLineasProducto: DevisaProductoEnum
+  productosConPrecios: [ID]
+  
+}
+
+input updateOportunidadInput {
+  
+  fechaProximaAccion: Date
+  idGrupoEmpresarial: ID!
+  grupoEmprearial: grupoEmpresarialInOportunidadInput!
+  modoContacto: modoContactoEnum!
+  idRazonSocial: ID
+  
+  faseNegociacion: faseOportunidadEnum
+  estado: estadoOportunidadEnum
+  prioridad: prioridadOportunidadEnum
+  
+  fechaPrevistaCierre: Date
+  probalidadGanado: Float
+  
+  porcentajeDescuentoTotal: Float
+  devisaLineasProducto: DevisaProductoEnum
+  productosConPrecios: [ID]
+  
+}
+
+extend type Mutation {
+  addMandarEmailToOportunidad(idOportunidad: ID!, data: createMandarEmailInput): MandarEmailOportunidad!
+}
+
+input createMandarEmailInput {
+  subject: String!
+  idToRecepient: ID!
+  body: String!
+  comentario: String
+  cc: String
+  bcc: String
+}
+
+extend type Mutation {
+  addComentarioToOportunidad(idOportunidad: ID!, comentario: String): ComentarioOportunidad!
+}
+
+extend type Mutation {
+  addLineaProductoToOportunidad(idOportunidad: ID!, input: createLineaProductoOInput ): LineaProductoOportunidadItem!
+  addLineasProductoToOportunidad(idOportunidad: ID!, inputs: [createLineaProductoOInput] ): [LineaProductoOportunidadItem]!
+  updateLineaProductoOportunidad(idLineaProducto: ID!, input: updateLineaProductoOInput ): LineaProductoOportunidadItem!
+  removeLineaProductoOportunidad(idLineaProducto: ID!): Boolean
+}
+
+input createLineaProductoOInput {
+  idProductoConPrecio: ID!
+  porcentajeDescuento: Float
+  ajustePrecioEnDevisa: Float
+  comentario: String
+}
+
+input updateLineaProductoOInput {
+  idProductoConPrecio: ID
+  porcentajeDescuento: Float
+  ajustePrecioEnDevisa: Float
+  comentario: String
 }
 
 `

@@ -50,7 +50,7 @@ const createToken = async (user, permisos, secret) => {
   let token;
   try {
     token = await jwt.sign({ id, email, nombre, permisos }, secret, {
-      expiresIn: "60m"
+      expiresIn: "480m"
     });
   } catch (e) {
     throw e;
@@ -117,6 +117,39 @@ const generaSETPart = (columnToValue, countStart = 1) => {
   return { query: queryString, vars };
 };
 
+
+
+/** 
+* Genera un objeto que proporciona todo lo necesario para hacer un insert 
+* @param {Object[]} args - Contiene los nombres de columna de la tabla de la BBDD con sus valores
+* @param {number} [argCount=1] - Indica donde empezar a contar los placeholder de los valores ($X,$Y)  
+* @return {{statement:{questionMarks:string, columNames:string},vars:Array}}
+*/
+const generaInsertPart = (args = [], argCount = 1) => {
+  //filtro el array para que no contenga objetos con valores nulos
+  const nonNullObject = args.filter(arg => Object.values(arg)[0] != null);
+
+  //Genero la parte de values($1,$2,$3)
+  let count = argCount;
+  const questionMarks = nonNullObject.map(_ => `$${count++}`).join(",");
+
+  //Genero los nombres de columna correspondientes
+  const columnNames = nonNullObject
+    .map(varr => `${Object.keys(varr)[0]}`)
+    .join(",");
+
+  //los valores tambíen hacen falta
+  const vars = nonNullObject.map(obj => Object.values(obj)[0]);
+
+  return {
+    statement: {
+      questionMarks,
+      columnNames
+    },
+    vars
+  };
+};
+
 const passwordToHash = password => {
   if (!password) {
     return null;
@@ -126,10 +159,24 @@ const passwordToHash = password => {
   return bcrypt.hashSync(password, salt);
 };
 
+const checkAllowedItemsReturnedByQuery = (
+  maxQueriesAllowed,
+  maxQueriesWanted,
+  domainObject = "Not specified domain object"
+) => {
+  if (maxQueriesWanted > maxQueriesAllowed) {
+    throw new Error(
+      `It is not possible to return more than ${maxQueriesAllowed} records in ${domainObject}`
+    );
+  }
+};
+
 export {
+  checkAllowedItemsReturnedByQuery,
   generaWhere,
   generaSETPart,
+  generaInsertPart,
   createToken,
   checkUserAndScopes,
-  passwordToHash,
+  passwordToHash
 };

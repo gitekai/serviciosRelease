@@ -16,6 +16,7 @@ enum DevisaProductoEnum {
 }
 
 interface ProductoConPrecio {
+  id: ID!
   nombre: String! 
   precio: Float!
   devisa: DevisaProductoEnum!

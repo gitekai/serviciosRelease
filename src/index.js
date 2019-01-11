@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken'
 import schema from './schema';
 import resolvers from './resolvers';
 import models from './models';
+import erp2d2 from './database';
 
 
 
@@ -33,7 +34,10 @@ const server = new ApolloServer({
     const user = await getUserFromToken(req);
 
     return {
-      models, 
+      database:{
+        erp2d2,
+      },
+      models:models(erp2d2), 
       secret: process.env.SECRET,
       user,
     }

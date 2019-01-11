@@ -2,7 +2,7 @@ export default `
 
 interface AccionOportunidad {
   createdBy: Usuario
-  date: Date
+  createdAt: Date
   comentario: String
 }
 

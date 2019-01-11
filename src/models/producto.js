@@ -6,7 +6,7 @@ class Producto {
     this.MAX_QUERY_RECORDS = process.env.MAX_QUERY_RECORDS;
     this.attributes = `id, nombre`;
     this.productoConPrecioAttributes =
-      'id_producto "idProducto", nombre, devisa, precio, is_xtraders "isXtraders", id_producto_con_precio "idProductoConPrecio"';
+      'nombre, devisa, precio, is_xtraders "isXtraders", id_producto_precio "id"';
   }
 
   async findAll(searchParams, user, db = this.db) {
@@ -60,7 +60,8 @@ class Producto {
     return producto.rows;
   }
 
-  async findProductoWithPrecioById(idProductoConPrecio, user, db = this.db) {
+
+  async findProductoERPv1WithPrecioById(idProductoConPrecio, user, db = this.db) {
     // COMPROBACION PERMISOS
     checkUserAndScopes(user, ["producto_r"]);
 
@@ -71,8 +72,8 @@ class Producto {
     let productoConPrecio;
     try {
       productoConPrecio = await db.query(
-        `Select ${this.productoConPrecioAttributes} from productos_con_precios 
-        where id_producto_con_precio = $1 `,
+        `Select ${this.productoConPrecioAttributes} from productos_obsoletos_con_precios 
+        where id_producto_precio = $1 `,
         [idProductoConPrecio]
       );
     } catch (e) {
