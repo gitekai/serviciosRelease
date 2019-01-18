@@ -110,15 +110,10 @@ extend type Mutation {
   updateOportunidad(input: updateOportunidadInput) : Oportunidad! 
 }
 
-input grupoEmpresarialInOportunidadInput {
-  idGrupoEmpresarial: ID
-  grupoEmpresarial: createGrupoEmpresarialInput
-}
-
 input createOportunidadInput {
   
   fechaProximaAccion: Date!
-  grupoEmpresarial: grupoEmpresarialInOportunidadInput!
+  idGrupoEmpresarial: ID!
   modoContacto: modoContactoEnum!
   idRazonSocial: ID
   
@@ -139,7 +134,6 @@ input updateOportunidadInput {
   
   fechaProximaAccion: Date
   idGrupoEmpresarial: ID!
-  grupoEmprearial: grupoEmpresarialInOportunidadInput!
   modoContacto: modoContactoEnum!
   idRazonSocial: ID
   
@@ -174,10 +168,9 @@ extend type Mutation {
 }
 
 extend type Mutation {
-  addLineaProductoToOportunidad(idOportunidad: ID!, input: createLineaProductoOInput ): LineaProductoOportunidadItem!
   addLineasProductoToOportunidad(idOportunidad: ID!, inputs: [createLineaProductoOInput] ): [LineaProductoOportunidadItem]!
   updateLineaProductoOportunidad(idLineaProducto: ID!, input: updateLineaProductoOInput ): LineaProductoOportunidadItem!
-  removeLineaProductoOportunidad(idLineaProducto: ID!): Boolean
+  removeLineasProductoOportunidad(idLineaProducto: [ID]!): Boolean
 }
 
 input createLineaProductoOInput {
@@ -194,9 +187,39 @@ input updateLineaProductoOInput {
   comentario: String
 }
 
+
+extend type Mutation {
+  createOportunidadWithGrupoEmpresarial(input: createOportunidadWGEInput!): Oportunidad!
+}
+
+input createOportunidadWGEInput{
+  grupoEmpresarial: createGrupoEmpresarialInput!,
+  fechaProximaAccion: Date!
+  modoContacto: modoContactoEnum!
+  idRazonSocial: ID
+  
+  faseNegociacion: faseOportunidadEnum
+  estado: estadoOportunidadEnum
+  prioridad: prioridadOportunidadEnum
+  
+  fechaPrevistaCierre: Date
+  probalidadGanado: Float
+  
+  porcentajeDescuentoTotal: Float
+  devisaLineasProducto: DevisaProductoEnum
+  lineasProducto: [createLineaProductoOInput]
+}
+
+
+
 `
 
 
 
 
 ;
+
+
+
+
+

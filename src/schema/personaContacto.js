@@ -16,7 +16,10 @@ extend type RootQuery {
 }
 
 extend type RootMutation {
-  createPersonaContacto(data:inputCreatePersonaContacto): PersonaContacto
+  createPersonaContacto(data: inputCreatePersonaContacto): PersonaContacto
+  updatePersonaContacto(data: updatePersonaContactoInput): PersonaContacto
+  deletePersonaConctactos(ids: [ID!] ): Boolean
+  
 }
 
 
